@@ -136,3 +136,23 @@ class IngredientViewSet(BaseRecipeAttrViewSet):
     """Manage ingredients in the database."""
     serializer_class = serializers.IngredientSerializer
     queryset = Ingredient.objects.all()
+
+
+@extend_schema_view(
+    list=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                'user',
+                OpenApiTypes.STR,
+                description='Comma seperated list of user IDs to filter'
+            )
+        ]
+    )
+)
+
+class MyRecipesViewSet(RecipeViewSet):
+    """View for Retrieving all recipes that created by authenticated user."""
+    def get_queryset(self):
+        """Retrieving all recipes that created by authenticated user."""
+        queryset = super().get_queryset()
+        return queryset.filter(user=self.request.user).order_by('id')
