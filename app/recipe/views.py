@@ -150,7 +150,7 @@ class IngredientViewSet(BaseRecipeAttrViewSet):
     )
 )
 
-class MyRecipesViewSet(RecipeViewSet):
+class MyRecipesViewSet(RecipeViewSet):  # noqa
     """View for Retrieving all recipes that created by authenticated user."""
     def get_queryset(self):
         """Retrieving all recipes that created by authenticated user."""
