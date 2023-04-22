@@ -9,6 +9,8 @@ from core.models import (
     Ingredient,
 )
 
+from drf_spectacular.utils import extend_schema_field
+
 
 class IngredientSerializer(serializers.ModelSerializer):
     """Serializer for ingredients."""
@@ -33,11 +35,43 @@ class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, required=False)
     ingredients = IngredientSerializer(many=True, required=False)
 
+    title = serializers.SerializerMethodField()
+    time_minutes = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+    link = serializers.SerializerMethodField()
+
+    def get_title(self, obj) -> str:
+        if self.context['request'].LANGUAGE_CODE == 'ar':
+            return obj.title_ar
+        else:
+            return obj.title_en
+
+    def get_time_minutes(self, obj) -> int:
+        if self.context['request'].LANGUAGE_CODE == 'ar':
+            return obj.time_minutes_ar
+        else:
+            return obj.time_minutes_en
+
+    @extend_schema_field(
+        serializers.DecimalField(max_digits=5, decimal_places=2),
+        )
+    def get_price(self, obj):
+        if self.context['request'].LANGUAGE_CODE == 'ar':
+            return obj.price_ar
+        else:
+            return obj.price_en
+
+    def get_link(self, obj) -> str:
+        if self.context['request'].LANGUAGE_CODE == 'ar':
+            return obj.link_ar
+        else:
+            return obj.link_en
+
     class Meta:
         model = Recipe
         fields = [
-            'id', 'title', 'time_mintues', 'price', 'link', 'tags',
-            'ingredients',
+            'id', 'title', 'time_minutes', 'price', 'link', 'tags',
+            'ingredients', 'image',
         ]
         read_only_fields = ['id']
 
@@ -91,6 +125,14 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class RecipeDetailSerializer(RecipeSerializer):
     """Serializer for recipe detail view."""
+
+    description = serializers.SerializerMethodField()
+
+    def get_description(self, obj) -> str:
+        if self.context['request'].LANGUAGE_CODE == 'ar':
+            return obj.description_ar
+        else:
+            return obj.description_en
 
     class Meta(RecipeSerializer.Meta):
         fields = RecipeSerializer.Meta.fields + ['description', 'image']

@@ -12,6 +12,8 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 
+from django.utils.translation import gettext_lazy as _
+
 
 def recipe_image_file_path(instance, filename):
     """Generate file path for new recipe image."""
@@ -62,17 +64,75 @@ class Recipe(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
-    time_mintues = models.IntegerField()
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    link = models.CharField(max_length=255, blank=True)
+
+    title_en = models.CharField(
+        _('title (English)'),
+        max_length=255,
+        null=True,
+        blank=True,
+        default=None,
+        )
+    title_ar = models.CharField(
+        _('اسم الوصفة (Arabic)'),
+        max_length=255,
+        null=True,
+        blank=True,
+        default=None,
+    )
+    description_en = models.TextField(_('description (English)'), blank=True)
+    description_ar = models.TextField(_('الوصف (Arabic)'), blank=True)
+    time_minutes_en = models.IntegerField(
+        _('time_minutes (English)'),
+        null=True,
+        blank=True,
+        default=None,
+    )
+    time_minutes_ar = models.IntegerField(
+        _('الوقت بالدقائق(Arabic)'),
+        null=True,
+        blank=True,
+        default=None,
+    )
+    price_en = models.DecimalField(
+        _('price (English)'),
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        default=None,
+    )
+    price_ar = models.DecimalField(
+        _('التكلفة (Arabic)'),
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        default=None,
+    )
+    link_en = models.CharField(
+        _('link (English)'),
+        max_length=255,
+        blank=True,
+    )
+    link_ar = models.CharField(
+        _('الرابط (Arabic)'),
+        max_length=255,
+        blank=True,
+    )
     tags = models.ManyToManyField('Tag')
     ingredients = models.ManyToManyField('Ingredient')
-    image = models.ImageField(null=True, upload_to=recipe_image_file_path)
+    image = models.ImageField(
+        _('الصورة'),
+        null=True,
+        upload_to=recipe_image_file_path,
+    )
+
+    class Meta:
+        verbose_name = 'الوصفة'
+        verbose_name_plural = 'الوصفات'
 
     def __str__(self):
-        return self.title
+        return self.title_en
 
 
 class Tag(models.Model):
